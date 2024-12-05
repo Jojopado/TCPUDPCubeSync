@@ -111,6 +111,8 @@ namespace MyCustom.NetworkServiceFw
         {
             PhotonNetwork.PhotonServerSettings.AppSettings.Protocol = ConnectionProtocol.Tcp;
             RaiseEventOptions _raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+            //CachingOption先家在這邊
+            _raiseEventOptions.CachingOption = EventCaching.AddToRoomCacheGlobal;
             PhotonNetwork.RaiseEvent((byte)_raiseEventData[0], _raiseEventData[1], _raiseEventOptions, SendOptions.SendReliable);
         }
         public static void TriggerTCPToOthers(params object[] _raiseEventData)

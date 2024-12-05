@@ -20,15 +20,13 @@ public class InGameManager : MonoBehaviour
     /// </summary>
     /// This data has to be broardcasted continuously
     public static List<PlayerData.PlayerInfo> PlayerDataStructList = new List<PlayerData.PlayerInfo>();
+
+
     public List<PlayerData.PlayerInfo> _PlayerDataStructList;
     #endregion
-
-    /// <summary>
-    /// This function is called when the object becomes enabled and active.
-    /// </summary>
     void OnEnable()
     {
-
+        NetworkServiceFw.BindEvent(eventCode, SyncAcrossAllPlayerList);
     }
     void OnDisable()
     {
@@ -37,32 +35,28 @@ public class InGameManager : MonoBehaviour
     void Start()
     {
         //如果不延遲抓不到資料
-        NetworkServiceFw.BindEvent(eventCode, SyncAcrossAllPlayerList);
         SpawnAndSetDataMySelfAsync();
     }
 
     // Update is called once per frame
     void Update()
     {
-        _PlayerDataStructList = PlayerDataStructList;
-        Debug.Log("Scene player count " + _PlayerDataStructList.Count);
+
         //先進來的玩家可以抓到第二個玩家進入
         //第二位玩家抓不到第一位玩家進入
+        if (PhotonNetwork.IsMasterClient)
+        {
+            
+            NetworkServiceFw.TriggerTCPToAll(eventCode, null);
+            Debug.Log("Master client is sending data to all players");
+        }
 
-
-        NetworkServiceFw.TriggerUdpToOthers(eventCode, null);
     }
     async void SpawnAndSetDataMySelfAsync()
     {
         await Task.Delay(3000);  // Wait for 3 seconds 
         playerPrefab = (GameObject)Resources.Load("CubePlayer");
         player = Instantiate(playerPrefab, new Vector3(Random.Range(-4, 4), 0, Random.Range(-4, 4)), Quaternion.identity);
-
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // Master client triggers the event to all players
-            NetworkServiceFw.TriggerTCPToOthers(eventCode, null);
-        }
         //player.AddComponent<PlayerData>();
         player.GetComponent<PlayerData>()._playerInfo.userID = PlayerDataStructList[PlayerDataStructList.Count - 1].userID;
         player.GetComponent<PlayerData>()._playerInfo.nickName = PlayerDataStructList[PlayerDataStructList.Count - 1].nickName;
@@ -79,6 +73,8 @@ public class InGameManager : MonoBehaviour
     /// </summary>
     void SyncAcrossAllPlayerList()
     {
-        _PlayerDataStructList = PlayerDataStructList;
+        //嗚嗚嗚好感動，卡了很久，終於後進來的玩家也可以抓到先進來的玩家資料了，原因出在要用cache
+        _PlayerDataStructList = new List<PlayerData.PlayerInfo>(PlayerDataStructList);
+        Debug.Log("Scene player count " + _PlayerDataStructList.Count);
     }
 }
