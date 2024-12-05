@@ -27,7 +27,7 @@ public class InGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        Debug.Log($"{PhotonNetwork.PlayerList} is in the game");
     }
     void OnSpawningPlayer(EventData photonEvent)
     {
