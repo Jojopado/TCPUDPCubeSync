@@ -69,7 +69,7 @@ public class PlayerControllerCube : MonoBehaviour
 
         if (playerIndex == -1)
         {
-            //第二位玩家的第一位玩家ID沒有被更新
+            
             Debug.LogError($"Player with userID {_playerData._playerInfo.userID} not found in PlayerDataStructList.");
             return;
         }
