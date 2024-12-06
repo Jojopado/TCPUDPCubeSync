@@ -61,6 +61,8 @@ namespace MyCustom.NetworkServiceFw
                     catch (Exception ex)
                     {
                         Debug.LogError($"Exception during event processing: {ex.Message}");
+                        Debug.LogError($"Event code: {eventData.Code}, Data: {eventData.CustomData}");
+
                     }
                 }
             };
@@ -125,6 +127,7 @@ namespace MyCustom.NetworkServiceFw
         {
             PhotonNetwork.PhotonServerSettings.AppSettings.Protocol = ConnectionProtocol.Udp;
             RaiseEventOptions _raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+            _raiseEventOptions.CachingOption = EventCaching.AddToRoomCache;
             PhotonNetwork.RaiseEvent((byte)_raiseEventData[0], _raiseEventData[1], _raiseEventOptions, SendOptions.SendUnreliable);
         }
         public static void TriggerUdpToOthers(params object[] _raiseEventData)

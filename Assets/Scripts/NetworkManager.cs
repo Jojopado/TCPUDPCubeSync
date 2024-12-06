@@ -27,19 +27,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         roomOptions.PublishUserId = true;
         PhotonNetwork.JoinOrCreateRoom("Room1", roomOptions, TypedLobby.Default);
 
-    } 
+    }
     public override void OnJoinedRoom()
-{
-    // 在玩家加入房間後綁定事件
-    NetworkServiceFw.BindEvent<string, string, float, float>(eventCode, RE_TellOthersToSpawnMe);
+    {
+        // 在玩家加入房間後綁定事件
+        NetworkServiceFw.BindEvent<string, string, float, float>(eventCode, RE_TellOthersToSpawnMe);
 
-    Debug.Log("One player has landed, but not spawned yet");
-    Player localPlayer = PhotonNetwork.LocalPlayer;
-
-    // 這裡傳遞資料給所有玩家
-    NetworkServiceFw.TriggerTCPToAll(eventCode, new object[] { localPlayer.UserId, localPlayer.NickName, 1.0f, 1.0f });
-    NetworkServiceFw.OnChangingGameScene(2);
-}
+        Debug.Log("One player has landed, but not spawned yet");
+        Player localPlayer = PhotonNetwork.LocalPlayer;
+        NetworkServiceFw.TriggerTCPToAll(eventCode, new object[] { localPlayer.UserId, localPlayer.NickName, 1.0f, 1.0f  });
+        NetworkServiceFw.OnChangingGameScene(2);
+    }
 
     /// <summary>
     /// string _id, string _nickName, float _power, float _speed
